@@ -47,6 +47,6 @@ $input.addEventListener('keypress', (e) => {
         DelFun()
     }
 });
-// -------먼저 실행-----------
+// -------먼저 실행------------
 AddCompleted()
 DelFun()
