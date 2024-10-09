@@ -160,6 +160,7 @@ $input.addEventListener("keypress", (e) => {
   completeAll();
   clearCompete();
   edit()
+  console.log('정상작동');
 });
 
 
