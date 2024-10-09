@@ -151,6 +151,8 @@ window.addEventListener("hashchange", () => {
 });
 
 
+
+
 $input.addEventListener("keypress", (e) => {
   if (e.keyCode !== 13) return;
   ifToDo();
@@ -160,7 +162,6 @@ $input.addEventListener("keypress", (e) => {
   completeAll();
   clearCompete();
   edit()
-  console.log('정상작동');
 });
 
 
