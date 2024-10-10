@@ -172,6 +172,7 @@ $input.addEventListener("keypress", (e) => {
 
 
 // -------먼저 실행------------
+
 clearCompete();
 
 completeAll();
@@ -181,7 +182,6 @@ UpdatToDoCount();
 AddCompleted();
 
 DelFun();
-
 
 // window.addEventListener('hashchange',function(){
 
