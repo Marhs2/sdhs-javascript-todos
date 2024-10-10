@@ -84,21 +84,26 @@ function completeAll() {
 
 function edit(e) {
   Array.from($toDoBox.children).forEach((Box) => {
-    console.log(Box);
-    Box.addEventListener("dblclick", () => {
-      Box.classList.add("editing");
-      Box.innerHTML += `<input class="edit" type="text" />`;
-      const edit = Box.querySelector(".edit");
-      
-      edit.addEventListener("keypress", (e) => {
-        if (e.keyCode == 13) {
-          Box.childNodes[1].children[1].textContent = edit.value;
-          Box.classList.remove("editing");
-          Box.removechild(edit)
+    if (!Box.classList.contains("checkDbClick")) {
+      Box.classList.add("checkDbClick");
+      Box.addEventListener("dblclick", () => {
+        const editbox = document.createElement('input')
+        editbox.type = "text"
+        editbox.classList.add('edit')
+        Box.classList.add("editing");
+        Box.appendChild(editbox)
+        const edit = Box.querySelector(".edit");
 
-        }
+        edit.addEventListener("keypress", (e) => {
+          if (e.keyCode === 13) {
+            Box.childNodes[1].childNodes[3].textContent = edit.value; 
+            Box.classList.remove("editing");
+            Box.classList.remove("checkDbClick");
+            edit.remove();
+          }
+        });
       });
-    });
+    }
   });
 }
 
@@ -167,13 +172,15 @@ $input.addEventListener("keypress", (e) => {
 
 
 // -------먼저 실행------------
-// clearCompete();
+clearCompete();
 
-// completeAll();
+completeAll();
 
-// AddCompleted();
+UpdatToDoCount();
 
-// DelFun();
+AddCompleted();
+
+DelFun();
 
 
 // window.addEventListener('hashchange',function(){
