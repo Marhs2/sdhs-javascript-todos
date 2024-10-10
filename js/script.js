@@ -11,10 +11,10 @@ const $main = $(".main");
 const $clearBtn = $(".clear-completed");
 
 function createToDo() {
-  if ($input.value === "") {
+  if (!$input.value.trim()) {
     alert("입력하세요");
   } else {
-    const newTodo = document.createElement('li');
+    const newTodo = document.createElement("li");
     newTodo.innerHTML = `
       <div class="view">
         <input class="toggle" type="checkbox" />
@@ -26,7 +26,6 @@ function createToDo() {
     $toDoBox.appendChild(newTodo);
     $input.value = "";
 
-    // Re-attach event listeners after adding the new todo
     DelFun();
     AddCompleted();
     UpdatToDoCount();
@@ -87,16 +86,16 @@ function edit(e) {
     if (!Box.classList.contains("checkDbClick")) {
       Box.classList.add("checkDbClick");
       Box.addEventListener("dblclick", () => {
-        const editbox = document.createElement('input')
-        editbox.type = "text"
-        editbox.classList.add('edit')
+        const editbox = document.createElement("input");
+        editbox.type = "text";
+        editbox.classList.add("edit");
         Box.classList.add("editing");
-        Box.appendChild(editbox)
+        Box.appendChild(editbox);
         const edit = Box.querySelector(".edit");
 
         edit.addEventListener("keypress", (e) => {
           if (e.keyCode === 13) {
-            Box.childNodes[1].childNodes[3].textContent = edit.value; 
+            Box.childNodes[1].childNodes[3].textContent = edit.value;
             Box.classList.remove("editing");
             Box.classList.remove("checkDbClick");
             edit.remove();
@@ -107,14 +106,13 @@ function edit(e) {
   });
 }
 
-
 function UpdatToDoCount() {
-  if($toDoBox.children.length == 1 || $toDoBox.children.length == 0){
+  if ($toDoBox.children.length == 1 || $toDoBox.children.length == 0) {
     $ToDoCount.childNodes[0].textContent = $toDoBox.children.length;
-    $ToDoCount.childNodes[1].textContent = ' item left'
-  }else{
+    $ToDoCount.childNodes[1].textContent = " item left";
+  } else {
     $ToDoCount.childNodes[0].textContent = $toDoBox.children.length;
-    $ToDoCount.childNodes[1].textContent = ' items left'
+    $ToDoCount.childNodes[1].textContent = " items left";
   }
 }
 
@@ -127,7 +125,6 @@ function clearCompete() {
     });
   });
 }
-
 
 window.addEventListener("hashchange", function () {
   $filterItems.forEach(($filterItem) => {
@@ -155,9 +152,6 @@ window.addEventListener("hashchange", () => {
   });
 });
 
-
-
-
 $input.addEventListener("keypress", (e) => {
   if (e.keyCode !== 13) return;
   ifToDo();
@@ -166,10 +160,8 @@ $input.addEventListener("keypress", (e) => {
   DelFun();
   completeAll();
   clearCompete();
-  edit()
+  edit();
 });
-
-
 
 // -------먼저 실행------------
 
@@ -224,4 +216,3 @@ DelFun();
 // !condition ? object.sub() : object.add();a
 
 // object[!condition ? 'sub' : 'add']()
-
