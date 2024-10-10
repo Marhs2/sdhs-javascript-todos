@@ -25,6 +25,7 @@ function createToDo() {
 
     $toDoBox.appendChild(newTodo);
     $input.value = "";
+    console.log('실행');
 
     DelFun();
     AddCompleted();
