@@ -106,10 +106,8 @@ function completeAll() {
 
 function edit(e) {
   Array.from($toDoBox.children).forEach((Box) => {
-    console.log(Box.children[0].children);
     Box.children[0].children[1].style.width = "420%"
     Box.children[0].children[1].addEventListener("dblclick", () => {
-      console.log('작동은함');
       if (!Box.classList.contains("editing")) {
         const editbox = document.createElement("input");
         editbox.type = "text";
@@ -118,6 +116,25 @@ function edit(e) {
         Box.classList.add("editing");
         Box.appendChild(editbox);
         const edit = Box.querySelector(".edit");
+        edit.focus()
+
+        edit.addEventListener('blur',()=>{
+          if(!editbox.value.trim()){
+            Box.classList.remove("editing");
+            Box.classList.remove("checkDbClick");
+            edit.remove();
+          }else{
+            Box.childNodes[1].childNodes[3].textContent = edit.value;
+            Box.classList.remove("editing");
+            Box.classList.remove("checkDbClick");
+            edit.remove();
+          }
+
+        })
+
+
+
+
 
         edit.addEventListener("keypress", (e) => {
           if (e.keyCode === 13) {
