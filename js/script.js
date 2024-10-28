@@ -168,6 +168,7 @@ $input.addEventListener("keypress", (e) => {
 
 clearCompete();
 
+
 completeAll();
 
 UpdatToDoCount();
