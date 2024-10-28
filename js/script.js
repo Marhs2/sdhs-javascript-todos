@@ -7,8 +7,9 @@ const $ToggleAll = $("#toggle-all"); // toggleAll
 const $ToDoCount = $(".todo-count"); // todoCount
 const $Filters = $(".filters");
 const $filterItems = $$(".filters li a");
-const $main = $(".main");
+const $Main = $(".main");
 const $clearBtn = $(".clear-completed");
+const $footer = $('footer')
 
 function createToDo() {
   if (!$input.value.trim()) {
@@ -25,8 +26,8 @@ function createToDo() {
 
     $toDoBox.appendChild(newTodo);
     $input.value = "";
-    console.log('실행');
 
+    change();
     DelFun();
     AddCompleted();
     UpdatToDoCount();
@@ -53,24 +54,34 @@ function AddCompleted() {
       } else {
         button.parentNode.parentNode.classList.remove("completed");
       }
+      completeAll();
+      UpdatToDoCount();
+      change();
     });
   });
 }
 
 function ifToDo() {
-  const mainChildNode = $main.childNodes[3];
+  const mainChildNode = $Main.childNodes[3];
   $toDoBox.children.length == 0
-    ? (mainChildNode.style.display = "none")
-    : (mainChildNode.style.display = "block");
+  ? (mainChildNode.style.display = "none")
+  : (mainChildNode.style.display = "block");
 }
 
-ifToDo();
+function ifNothing(){
+  $toDoBox.children.length == 0
+  ? ($footer.style.display = "none")
+  : ($footer.style.display = "block");
+}
+
 
 function completeAll() {
-  $ToggleAll.addEventListener("click", (e) => {
-    console.log(e.target);
-    console.log($toDoBox.children);
-    Array.from($toDoBox.children).forEach((element) => {
+  if(Array.from($toDoBox.children).filter((e) => e.classList.contains("completed"))){
+    $ToggleAll.checked = true;
+  }
+  
+  Array.from($toDoBox.children).forEach((element) => {
+    $ToggleAll.addEventListener("click", (e) => {
       if ($ToggleAll.checked == true) {
         element.classList.add("completed");
         element.children[0].childNodes[1].checked = true;
@@ -78,17 +89,31 @@ function completeAll() {
         element.classList.remove("completed");
         element.children[0].childNodes[1].checked = false;
       }
+      change()
+      UpdatToDoCount();
     });
+
+    if (element.children[0].childNodes[1].checked == false) {
+      $ToggleAll.checked = false;
+    }
+  change();
   });
+
+
+
+  UpdatToDoCount();
 }
 
 function edit(e) {
   Array.from($toDoBox.children).forEach((Box) => {
-    if (!Box.classList.contains("checkDbClick")) {
-      Box.classList.add("checkDbClick");
-      Box.addEventListener("dblclick", () => {
+    console.log(Box.children[0].children);
+    Box.children[0].children[1].style.width = "420%"
+    Box.children[0].children[1].addEventListener("dblclick", () => {
+      console.log('작동은함');
+      if (!Box.classList.contains("editing")) {
         const editbox = document.createElement("input");
         editbox.type = "text";
+        editbox.placeholder = Box.childNodes[1].childNodes[3].textContent
         editbox.classList.add("edit");
         Box.classList.add("editing");
         Box.appendChild(editbox);
@@ -96,24 +121,49 @@ function edit(e) {
 
         edit.addEventListener("keypress", (e) => {
           if (e.keyCode === 13) {
-            Box.childNodes[1].childNodes[3].textContent = edit.value;
-            Box.classList.remove("editing");
-            Box.classList.remove("checkDbClick");
-            edit.remove();
+            if(!editbox.value.trim()){
+              Box.classList.remove("editing");
+              Box.classList.remove("checkDbClick");
+              edit.remove();
+            }else{
+              Box.childNodes[1].childNodes[3].textContent = edit.value;
+              Box.classList.remove("editing");
+              Box.classList.remove("checkDbClick");
+              
+              edit.remove();
+            }
+            
           }
         });
-      });
-    }
+      }
+
+    });
   });
 }
 
 function UpdatToDoCount() {
-  if ($toDoBox.children.length == 1 || $toDoBox.children.length == 0) {
-    $ToDoCount.childNodes[0].textContent = $toDoBox.children.length;
-    $ToDoCount.childNodes[1].textContent = " item left";
-  } else {
-    $ToDoCount.childNodes[0].textContent = $toDoBox.children.length;
-    $ToDoCount.childNodes[1].textContent = " items left";
+  if($toDoBox.children.length == 0 ||  $toDoBox.children.length == 1){
+    $ToDoCount.childNodes[0].innerHTML = $toDoBox.children.length
+    $ToDoCount.childNodes[1].textContent = ' item left'
+  }else{
+    $ToDoCount.childNodes[0].innerHTML = $toDoBox.children.length
+    $ToDoCount.childNodes[1].textContent = ' items left'    
+  }
+
+  Array.from($toDoBox.children).forEach(element => {
+    if(element.classList.contains("completed")){
+      $ToDoCount.childNodes[0].innerHTML--
+    }
+
+
+  });
+
+  if($ToDoCount.childNodes[0].innerHTML == 1){
+    $ToDoCount.childNodes[1].textContent = ' item left'    
+  } 
+
+  if($ToDoCount.childNodes[0].innerHTML == 0){
+    $ToDoCount.childNodes[1].textContent = ' items left'    
   }
 }
 
@@ -124,6 +174,9 @@ function clearCompete() {
         ToDos.remove();
       }
     });
+  ifToDo()
+  ifNothing()
+
   });
 }
 
@@ -134,10 +187,11 @@ window.addEventListener("hashchange", function () {
     } else {
       $filterItem.classList.remove("selected");
     }
+    change();
   });
 });
 
-window.addEventListener("hashchange", () => {
+function change() {
   Array.from($toDoBox.children).forEach((Box) => {
     if (window.location.hash == "#/active") {
       !Box.classList.contains("completed")
@@ -151,23 +205,20 @@ window.addEventListener("hashchange", () => {
       Box.style.display = "flex";
     }
   });
-});
+}
 
 $input.addEventListener("keypress", (e) => {
   if (e.keyCode !== 13) return;
-  ifToDo();
   createToDo();
-  AddCompleted();
-  DelFun();
   completeAll();
   clearCompete();
   edit();
+  ifNothing()
 });
 
-// -------먼저 실행------------
+// ---------먼저 실행-------------
 
 clearCompete();
-
 
 completeAll();
 
@@ -177,6 +228,9 @@ AddCompleted();
 
 DelFun();
 
+ifToDo();
+
+ifNothing()
 // window.addEventListener('hashchange',function(){
 
 //   $filterItems.forEach( $filterItem => {
