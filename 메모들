@@ -1,0 +1,42 @@
+// window.addEventListener('hashchange',function(){
+
+//   $filterItems.forEach( $filterItem => {
+//     const methodName = $filterItem.hash === window.location.hash ? 'add' : 'remove';
+//     const check = $filterItem.hash === window.location.hash ;
+//     $filterItem.classList[methodName]('selected')
+
+//   });
+// })
+
+// 1. object안에 add 메소드가 있다
+// 2. object안에 sub 메소드가 있다
+// 3. 만약에 조건이 true 이면 sub 메소드를 실행 하고
+// 4. 만약에 조건이 false 이면 add 메소드를 실행 하고
+
+// const object = {
+//   one: 1,
+//   two: 4,
+//   add(){
+//     console.log('add 실행');
+//   },
+
+//   sub(){
+//     console.log('sub 실행');
+//   },
+
+//   print(str) {
+//     console.log(str);;
+//   }
+// }
+
+// const condition = false;
+// if(!condition){
+//   object.sub()
+// }else {
+//   object.add()
+// }
+
+// !condition ? object.sub() : object.add();a
+
+// object[!condition ? 'sub' : 'add']()
+

@@ -11,6 +11,58 @@ const $Main = $(".main");
 const $clearBtn = $(".clear-completed");
 const $footer = $('footer')
 
+const savedData = JSON.parse(localStorage.getItem('save'))
+
+let Data = savedData || {
+  todo1: {
+    text: '1번',
+    isFinish: true
+  },
+  todo2: {
+    text: '2번',
+    isFinish: true
+  },
+  todo3: {
+    text: '3번',
+    isFinish: false
+  },
+  todo4: {
+    text: '4번',
+    isFinish: true
+  }
+}
+
+let num = Object.keys(Data).length
+
+
+
+
+
+Object.keys(Data).forEach(element => {
+  const data = Data[element]
+  const newTodo = document.createElement("li");
+
+  newTodo.innerHTML = `
+  <div class="view">
+  <input class="toggle" type="checkbox" />
+  <label>${data.text}</label>
+  <button class="destroy"></button>
+  </div>
+  `
+
+  if (data.isFinish == true) {
+    toggle = newTodo.querySelector('.toggle')
+    toggle.checked = true
+  }
+
+
+  $toDoBox.appendChild(newTodo);
+  $input.value = "";
+
+});
+
+
+
 function createToDo() {
   if (!$input.value.trim()) {
     alert("입력하세요");
@@ -24,22 +76,62 @@ function createToDo() {
       </div>
     `;
 
+
+    Data[`todo${++num}`] = {
+      text: `${$input.value}`,
+      isFinish: false
+    }
+
+    localStorage.setItem('save', JSON.stringify(Data))
+
+
     $toDoBox.appendChild(newTodo);
     $input.value = "";
+
+
 
     change();
     DelFun();
     AddCompleted();
     UpdatToDoCount();
     ifToDo();
+
+
   }
+
+
+
+
+
 }
+
+function findTodoIndex(todoText) {
+  return Object.keys(Data).findIndex(key => Data[key].text === todoText);
+}
+
+
+
+
 
 function DelFun() {
   const $delButtons = document.querySelectorAll(".destroy");
   $delButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      button.parentNode.parentNode.remove();
+    button.addEventListener("click", (e) => {
+      const li = button.parentNode.parentNode;
+      const Index = Array.from($toDoBox.children).indexOf(li)
+      // console.log(textIndex);
+      // console.log(Data[`todo${textIndex}`]);
+
+      
+      console.log(Object.keys(Data)[0]);
+      
+      delete Data[Object.keys(Data)[Index]]
+      
+
+      localStorage.setItem('save', JSON.stringify(Data))
+
+
+      li.remove()
       UpdatToDoCount();
     });
   });
@@ -64,24 +156,25 @@ function AddCompleted() {
 function ifToDo() {
   const mainChildNode = $Main.childNodes[3];
   $toDoBox.children.length == 0
-  ? (mainChildNode.style.display = "none")
-  : (mainChildNode.style.display = "block");
+    ? (mainChildNode.style.display = "none")
+    : (mainChildNode.style.display = "block");
 }
 
-function ifNothing(){
+function ifNothing() {
   $toDoBox.children.length == 0
-  ? ($footer.style.display = "none")
-  : ($footer.style.display = "block");
+    ? ($footer.style.display = "none")
+    : ($footer.style.display = "block");
 }
 
 
 function completeAll() {
-  if(Array.from($toDoBox.children).filter((e) => e.classList.contains("completed"))){
+  if (Array.from($toDoBox.children).filter((e) => e.classList.contains("completed"))) {
     $ToggleAll.checked = true;
   }
-  
+
   Array.from($toDoBox.children).forEach((element) => {
     $ToggleAll.addEventListener("click", (e) => {
+      console.log('클릭');
       if ($ToggleAll.checked == true) {
         element.classList.add("completed");
         element.children[0].childNodes[1].checked = true;
@@ -92,11 +185,7 @@ function completeAll() {
       change()
       UpdatToDoCount();
     });
-
-    if (element.children[0].childNodes[1].checked == false) {
-      $ToggleAll.checked = false;
-    }
-  change();
+    change();
   });
 
 
@@ -118,12 +207,12 @@ function edit(e) {
         const edit = Box.querySelector(".edit");
         edit.focus()
 
-        edit.addEventListener('blur',()=>{
-          if(!editbox.value.trim()){
+        edit.addEventListener('blur', () => {
+          if (!editbox.value.trim()) {
             Box.classList.remove("editing");
             Box.classList.remove("checkDbClick");
             edit.remove();
-          }else{
+          } else {
             Box.childNodes[1].childNodes[3].textContent = edit.value;
             Box.classList.remove("editing");
             Box.classList.remove("checkDbClick");
@@ -138,18 +227,18 @@ function edit(e) {
 
         edit.addEventListener("keypress", (e) => {
           if (e.keyCode === 13) {
-            if(!editbox.value.trim()){
+            if (!editbox.value.trim()) {
               Box.classList.remove("editing");
               Box.classList.remove("checkDbClick");
               edit.remove();
-            }else{
+            } else {
               Box.childNodes[1].childNodes[3].textContent = edit.value;
               Box.classList.remove("editing");
               Box.classList.remove("checkDbClick");
-              
+
               edit.remove();
             }
-            
+
           }
         });
       }
@@ -159,28 +248,28 @@ function edit(e) {
 }
 
 function UpdatToDoCount() {
-  if($toDoBox.children.length == 0 ||  $toDoBox.children.length == 1){
+  if ($toDoBox.children.length == 0 || $toDoBox.children.length == 1) {
     $ToDoCount.childNodes[0].innerHTML = $toDoBox.children.length
     $ToDoCount.childNodes[1].textContent = ' item left'
-  }else{
+  } else {
     $ToDoCount.childNodes[0].innerHTML = $toDoBox.children.length
-    $ToDoCount.childNodes[1].textContent = ' items left'    
+    $ToDoCount.childNodes[1].textContent = ' items left'
   }
 
   Array.from($toDoBox.children).forEach(element => {
-    if(element.classList.contains("completed")){
+    if (element.classList.contains("completed")) {
       $ToDoCount.childNodes[0].innerHTML--
     }
 
 
   });
 
-  if($ToDoCount.childNodes[0].innerHTML == 1){
-    $ToDoCount.childNodes[1].textContent = ' item left'    
-  } 
+  if ($ToDoCount.childNodes[0].innerHTML == 1) {
+    $ToDoCount.childNodes[1].textContent = ' item left'
+  }
 
-  if($ToDoCount.childNodes[0].innerHTML == 0){
-    $ToDoCount.childNodes[1].textContent = ' items left'    
+  if ($ToDoCount.childNodes[0].innerHTML == 0) {
+    $ToDoCount.childNodes[1].textContent = ' items left'
   }
 }
 
@@ -191,8 +280,8 @@ function clearCompete() {
         ToDos.remove();
       }
     });
-  ifToDo()
-  ifNothing()
+    ifToDo()
+    ifNothing()
 
   });
 }
@@ -233,7 +322,21 @@ $input.addEventListener("keypress", (e) => {
   ifNothing()
 });
 
+
+
+
+$input.addEventListener('keydown', () => {
+  localStorage.setItem('save', JSON.stringify(Data))
+  savedData
+  Data
+})
+
+
+
+
 // ---------먼저 실행-------------
+
+edit()
 
 clearCompete();
 
@@ -248,44 +351,3 @@ DelFun();
 ifToDo();
 
 ifNothing()
-// window.addEventListener('hashchange',function(){
-
-//   $filterItems.forEach( $filterItem => {
-//     const methodName = $filterItem.hash === window.location.hash ? 'add' : 'remove';
-//     const check = $filterItem.hash === window.location.hash ;
-//     $filterItem.classList[methodName]('selected')
-
-//   });
-// })
-
-// 1. object안에 add 메소드가 있다
-// 2. object안에 sub 메소드가 있다
-// 3. 만약에 조건이 true 이면 sub 메소드를 실행 하고
-// 4. 만약에 조건이 false 이면 add 메소드를 실행 하고
-
-// const object = {
-//   one: 1,
-//   two: 4,
-//   add(){
-//     console.log('add 실행');
-//   },
-
-//   sub(){
-//     console.log('sub 실행');
-//   },
-
-//   print(str) {
-//     console.log(str);;
-//   }
-// }
-
-// const condition = false;
-// if(!condition){
-//   object.sub()
-// }else {
-//   object.add()
-// }
-
-// !condition ? object.sub() : object.add();a
-
-// object[!condition ? 'sub' : 'add']()
